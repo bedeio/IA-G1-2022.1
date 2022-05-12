@@ -1,0 +1,31 @@
+[level]
+map = map/MAPA_LENDA-AANG.txt
+
+[.]
+name = plano
+time = 1
+color = 255, 255, 200
+
+[R]
+name = rochoso
+time = 5
+color = 128, 128, 128
+
+[F]
+name = floresta
+time = 10
+color = 0, 128, 0
+
+[A]
+name = agua
+time = 15
+color = 0, 0, 255
+
+[M]
+name = montanhoso
+time = 200
+color = 128, 128, 0
+
+[0]
+name = etapa
+color = 255, 0, 255
