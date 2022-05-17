@@ -60,15 +60,28 @@ class Level(object):
         start_time.start()
     
     def explore(self):
-        for i in range(len(self.stages)-2):
-            start = self.stages[i][:2]
-            stop = self.stages[i+1][:2]
-            start_time = threading.Timer(2,self.a_star_algorithm, [start, stop])
+        for i in range(len(self.stages)-1):
+            start = self.stages[i]
+            stop = self.stages[i+1]
+            start_time = threading.Timer(1,self.goTo, [start, stop])
             start_time.start()
             start_time.join()
         
         self.open_lst = set([])
         self.closed_lst = set([])
+
+    def getTimeTravel(self, path):
+        totalTime = 0
+        for i in path:
+            key = self.map[i[1]][i[0]]
+            if key in self.key.keys():
+                totalTime += int(self.key[key]['time'])
+        return totalTime
+
+    def goTo(self, start, stop):
+        path = self.a_star_algorithm(start[:2], stop[:2])
+        stop.append(self.getTimeTravel(path))
+        print('Duration: {}'.format(stop[-1]))
 
     
     def get_neighbors(self,v):
@@ -170,6 +183,13 @@ class Level(object):
         print('Path does not exist!')
         return None 
     
+    def getTotalTime(self):
+        total = 0
+        for i in self.stages:
+            if len(i) > 3:
+                total += i[3]
+        return total
+    
     def renderExploration(self):
         def getTiles(tileList, color, alpha):
             tiles = []
@@ -177,23 +197,40 @@ class Level(object):
             tile.fill(color)
             tile.set_alpha(alpha)
             for n in tileList:
-                plots.append((tile, tile.get_rect(topleft = (n[0]*MAP_TILE_WIDTH, n[1]*MAP_TILE_HEIGHT)))) 
+                plots.append((tile, tile.get_rect(topleft = (n[0]*MAP_TILE_WIDTH+50, n[1]*MAP_TILE_HEIGHT+150)))) 
             return tiles
 
         plots = []
         
         plots += getTiles(self.open_lst, (255, 50, 255), 170)
         plots += getTiles(self.closed_lst, (255, 125, 255), 170)
-        plots += getTiles(self.reconst_path, (255, 90,0), 255)
+        plots += getTiles(self.reconst_path, (255, 90,0), 170)
+
+        font = pygame.font.SysFont('monospace', 24, True)
+
+        plots.append((font.render('Total: {}'.format(self.getTotalTime()), False, (255,255,255)), (self.width * MAP_TILE_WIDTH + 50 + 20,20)))
+        for i, s in enumerate(self.stages):
+            if len(s) > 3:
+                plots.append((font.render('Etapa {}: {}'.format(i,s[-1]), False, (255,255,255)), (self.width * MAP_TILE_WIDTH + 50 + 20,20*(i+2))))
+            else:
+                plots.append((font.render('Etapa {}'.format(i), False, (255,255,255)), (self.width * MAP_TILE_WIDTH + 50 + 20,20*(i+2))))
+
 
         return plots
 
 
 if __name__ == "__main__":
-    screen = pygame.display.set_mode((1000, 600))
+    pygame.init()
+
+    SCREEN_WIDTH = 1366
+    SCREEN_HEIGHT = 768
 
     MAP_TILE_WIDTH = 3
     MAP_TILE_HEIGHT = 6
+
+    screen = pygame.display.set_mode((SCREEN_WIDTH , SCREEN_HEIGHT))
+    blackBackground = pygame.Surface((SCREEN_WIDTH, SCREEN_HEIGHT))
+    blackBackground.fill((0,0,0))
 
     level = Level()
     level.load_file('map/level.map')
@@ -202,16 +239,13 @@ if __name__ == "__main__":
 
     background = level.render()
     overlays = pygame.sprite.RenderUpdates()
-    screen.blit(background, (0, 0))
-
-    overlays.draw(screen)
-    pygame.display.flip()
 
     game_over = False
     exploring = False
 
     while not game_over:
-        screen.blit(background, (0, 0))
+        screen.blit(blackBackground, (0,0))
+        screen.blit(background, (50, 150))
         for event in pygame.event.get():
             if event.type == KEYDOWN and event.key ==  K_SPACE:
                 level.initExploration()
