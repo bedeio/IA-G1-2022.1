@@ -23,21 +23,20 @@ class Level(object):
     def render(self):
         image = pygame.Surface(
             (self.width*MAP_TILE_WIDTH, self.height*MAP_TILE_HEIGHT))
-        overlays = {}
         for map_y, line in enumerate(self.map):
             for map_x, c in enumerate(line):
                 red, green, blue = 0, 0, 0
-                try:
+                color = ''
+                if c in self.key.keys():
                     color = self.key[c]['color']
-                    red, green, blue = [int(v) for v in color.split(',')]
-                except:
+                else:
                     color = self.key['_']['color']
-                    red, green, blue = [int(v) for v in color.split(',')]
+                red, green, blue = [int(v) for v in color.split(',')]
                 rect = pygame.Surface((MAP_TILE_WIDTH, MAP_TILE_HEIGHT))
                 rect.fill((red, green, blue))
                 image.blit(rect,
                            (map_x*MAP_TILE_WIDTH, map_y*MAP_TILE_HEIGHT))
-        return image, overlays
+        return image
     
     def setStageList(self):
         self.stages = []
@@ -46,7 +45,7 @@ class Level(object):
             for letter in lineObjs:
                 if letter not in self.key.keys():
                     col = self.map[line].find(letter)
-                    self.stages.append([line, col, letter])
+                    self.stages.append([col, line, letter])
 
         self.stages.sort(key = lambda x: x[2])
 
@@ -62,7 +61,7 @@ if __name__ == "__main__":
 
     clock = pygame.time.Clock()
 
-    background, overlay_dict = level.render()
+    background = level.render()
     overlays = pygame.sprite.RenderUpdates()
     screen.blit(background, (0, 0))
 
@@ -72,9 +71,11 @@ if __name__ == "__main__":
     game_over = False
 
     while not game_over:
-        overlays.draw(screen)
-        pygame.display.flip()
-        clock.tick(15)
+        screen.blit(background, (0, 0))
         for event in pygame.event.get():
             if event.type == QUIT or event.type == KEYDOWN and event.key == K_ESCAPE:
                 game_over = True
+
+        overlays.draw(screen)
+        pygame.display.flip()
+        clock.tick(15)
