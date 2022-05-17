@@ -18,6 +18,7 @@ class Level(object):
                 self.key[section] = desc
         self.width = len(self.map[0])
         self.height = len(self.map)
+        self.setStageList()
 
     def render(self):
         image = pygame.Surface(
@@ -30,13 +31,24 @@ class Level(object):
                     color = self.key[c]['color']
                     red, green, blue = [int(v) for v in color.split(',')]
                 except:
-                    color = self.key['0']['color']
+                    color = self.key['_']['color']
                     red, green, blue = [int(v) for v in color.split(',')]
                 rect = pygame.Surface((MAP_TILE_WIDTH, MAP_TILE_HEIGHT))
                 rect.fill((red, green, blue))
                 image.blit(rect,
                            (map_x*MAP_TILE_WIDTH, map_y*MAP_TILE_HEIGHT))
         return image, overlays
+    
+    def setStageList(self):
+        self.stages = []
+        for line in range(self.height):
+            lineObjs = set(self.map[line])
+            for letter in lineObjs:
+                if letter not in self.key.keys():
+                    col = self.map[line].find(letter)
+                    self.stages.append([line, col, letter])
+
+        self.stages.sort(key = lambda x: x[2])
 
 
 if __name__ == "__main__":

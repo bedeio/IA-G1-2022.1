@@ -26,6 +26,6 @@ name = montanhoso
 time = 200
 color = 128, 128, 0
 
-[0]
+[_]
 name = etapa
 color = 255, 0, 255
