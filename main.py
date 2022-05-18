@@ -34,7 +34,7 @@ class Level(object):
                 else:
                     color = self.key['_']['color']
                 red, green, blue = [int(v) for v in color.split(',')]
-                rect = pygame.Surface((MAP_TILE_WIDTH, MAP_TILE_HEIGHT))
+                rect = pygame.Surface((MAP_TILE_WIDTH-1, MAP_TILE_HEIGHT-1))
                 rect.fill((red, green, blue))
                 image.blit(rect,
                            (map_x*MAP_TILE_WIDTH, map_y*MAP_TILE_HEIGHT))
@@ -63,7 +63,7 @@ class Level(object):
         for i in range(len(self.stages)-1):
             start = self.stages[i]
             stop = self.stages[i+1]
-            start_time = threading.Timer(1,self.goTo, [start, stop])
+            start_time = threading.Timer(0.5,self.goTo, [start, stop])
             start_time.start()
             start_time.join()
         
@@ -155,25 +155,25 @@ class Level(object):
                 return reconst_path
  
             # for all the neighbors of the current node do
-            for m in self.get_neighbors(n):
+            for neighbor in self.get_neighbors(n):
               # if the current node is not presentin both open_lst and closed_lst
                 # add it to open_lst and note n as it's par
-                if m not in self.open_lst and m not in self.closed_lst:
-                    self.open_lst.append(m)
-                    par[str(m)] = n
-                    poo[str(m)] = poo[str(n)] + self.w(m)
+                if neighbor not in self.open_lst and neighbor not in self.closed_lst:
+                    self.open_lst.append(neighbor)
+                    par[str(neighbor)] = n
+                    poo[str(neighbor)] = poo[str(n)] + self.w(neighbor)
  
                 # otherwise, check if it's quicker to first visit n, then m
                 # and if it is, update par data and poo data
                 # and if the node was in the closed_lst, move it to open_lst
                 else:
-                    if poo[str(m)] > poo[str(n)] + self.w(m):
-                        poo[str(m)] = poo[str(n)] + self.w(m)
-                        par[str(m)] = n
+                    if poo[str(neighbor)] > poo[str(n)] + self.w(neighbor):
+                        poo[str(neighbor)] = poo[str(n)] + self.w(neighbor)
+                        par[str(neighbor)] = n
  
-                        if m in self.closed_lst:
-                            self.closed_lst.remove(m)
-                            self.open_lst.append(m)
+                        if neighbor in self.closed_lst:
+                            self.closed_lst.remove(neighbor)
+                            self.open_lst.append(neighbor)
  
             # remove n from the open_lst, and add it to closed_lst
             # because all of his neighbors were inspected
@@ -197,7 +197,7 @@ class Level(object):
             tile.fill(color)
             tile.set_alpha(alpha)
             for n in tileList:
-                plots.append((tile, tile.get_rect(topleft = (n[0]*MAP_TILE_WIDTH+50, n[1]*MAP_TILE_HEIGHT+150)))) 
+                plots.append((tile, tile.get_rect(topleft = (n[0]*MAP_TILE_WIDTH+BORDER_X, n[1]*MAP_TILE_HEIGHT+BORDER_Y)))) 
             return tiles
 
         plots = []
@@ -208,12 +208,12 @@ class Level(object):
 
         font = pygame.font.SysFont('monospace', 24, True)
 
-        plots.append((font.render('Total: {}'.format(self.getTotalTime()), False, (255,255,255)), (self.width * MAP_TILE_WIDTH + 50 + 20,20)))
+        plots.append((font.render('Total: {}'.format(self.getTotalTime()), False, (255,255,255)), (self.width * MAP_TILE_WIDTH + BORDER_X + 20,50)))
         for i, s in enumerate(self.stages):
             if len(s) > 3:
-                plots.append((font.render('Etapa {}: {}'.format(i,s[-1]), False, (255,255,255)), (self.width * MAP_TILE_WIDTH + 50 + 20,20*(i+2))))
+                plots.append((font.render('Etapa {}: {}'.format(i,s[-1]), False, (255,255,255)), (self.width * MAP_TILE_WIDTH + BORDER_X + 20,23*(i+1)+50)))
             else:
-                plots.append((font.render('Etapa {}'.format(i), False, (255,255,255)), (self.width * MAP_TILE_WIDTH + 50 + 20,20*(i+2))))
+                plots.append((font.render('Etapa {}'.format(i), False, (255,255,255)), (self.width * MAP_TILE_WIDTH + BORDER_X + 20,23*(i+1)+50)))
 
 
         return plots
@@ -222,11 +222,14 @@ class Level(object):
 if __name__ == "__main__":
     pygame.init()
 
-    SCREEN_WIDTH = 1366
-    SCREEN_HEIGHT = 768
+    SCREEN_WIDTH = 1600 
+    SCREEN_HEIGHT = 900
 
-    MAP_TILE_WIDTH = 3
-    MAP_TILE_HEIGHT = 6
+    MAP_TILE_WIDTH = 4
+    MAP_TILE_HEIGHT = 9
+
+    BORDER_X = 20
+    BORDER_Y = 60
 
     screen = pygame.display.set_mode((SCREEN_WIDTH , SCREEN_HEIGHT))
     blackBackground = pygame.Surface((SCREEN_WIDTH, SCREEN_HEIGHT))
@@ -245,7 +248,7 @@ if __name__ == "__main__":
 
     while not game_over:
         screen.blit(blackBackground, (0,0))
-        screen.blit(background, (50, 150))
+        screen.blit(background, (BORDER_X, BORDER_Y))
         for event in pygame.event.get():
             if event.type == KEYDOWN and event.key ==  K_SPACE:
                 level.initExploration()
