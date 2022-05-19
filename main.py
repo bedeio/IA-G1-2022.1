@@ -5,6 +5,7 @@ import configparser
 import threading
 import time
 import math
+from queue import PriorityQueue
 
 
 class Level(object):
@@ -16,8 +17,9 @@ class Level(object):
         self.height = 0
 
         # a* state
-        self.open_lst = set([])
-        self.closed_lst = set([])
+        self.open_q = PriorityQueue()
+        self.open_lst = []
+        self.closed_lst = []
         self.reconst_path = []
 
     def load_file(self, filename="level.map"):
@@ -105,7 +107,7 @@ class Level(object):
         return neighbors
 
     def h(self, p, q):
-        return abs(p[0] - q[0]) + abs(p[1] - q[1])
+        return 0
         # math.dist(p, q)
         # abs(p[0] - q[0]) + abs(p[1] - q[1])
 
@@ -122,72 +124,39 @@ class Level(object):
         # node
         # And closed_lst is a list of nodes which have been visited
         # and who's neighbors have been always inspected
+        self.open_q = PriorityQueue()
+        self.open_q.put((0, start))
         self.open_lst = [start]
-        self.closed_lst = []
+        nodes_from = {}
+        costs = {}
+        nodes_from[str(start)] = None
+        costs[str(start)] = 0
 
-        # poo has present distances from start to all other nodes
-        # the default value is +infinity
-        poo = {}
-        poo[str(start)] = 0
-
-        # par contains an adjac mapping of all nodes
-        par = {}
-        par[str(start)] = start
-
-        while len(self.open_lst) > 0:
-            # time.sleep(0.0001)
-            n = self.open_lst[0]
-
-            # it will find a node with the lowest value of f() -
-            for v in self.open_lst:
-                # print("Poo:", poo[str(v)])
-                if poo[str(v)] + self.h(v, stop) < poo[str(n)] + self.h(n, stop):
-                    n = v
-
-            # if the current node is the stop
-            # then we start again from start
-            if n == stop:
+        while not self.open_q.empty():
+            current_node = self.open_q.get()[1]
+            if current_node == stop:
                 reconst_path = []
-
-                while par[str(n)] != n:
-                    reconst_path.append(n)
-                    n = par[str(n)]
+                while current_node != start:
+                    reconst_path.append(current_node)
+                    current_node = nodes_from[str(current_node)]
 
                 reconst_path.append(start)
-
                 reconst_path.reverse()
-
                 # print("Path found: {}".format(reconst_path))
                 self.reconst_path += reconst_path
                 return reconst_path
 
-            # for all the neighbors of the current node do
-            for neighbor in self.get_neighbors(n):
-                # if the current node is not presentin both open_lst and closed_lst
-                # add it to open_lst and note n as it's par
-                if neighbor not in self.open_lst and neighbor not in self.closed_lst:
+            for neighbor in self.get_neighbors(current_node):
+                # print("NEIGHBOR:", neighbor)
+                neighbor_cost = costs[str(current_node)] + self.w(neighbor)
+                if str(neighbor) not in costs or neighbor_cost < costs[str(neighbor)]:
+                    costs[str(neighbor)] = neighbor_cost
+                    f = neighbor_cost + self.h(neighbor, stop)
+                    self.open_q.put((f, neighbor))
                     self.open_lst.append(neighbor)
-                    par[str(neighbor)] = n
-                    poo[str(neighbor)] = poo[str(n)] + self.w(neighbor)
+                    nodes_from[str(neighbor)] = current_node
 
-                # otherwise, check if it's quicker to first visit n, then m
-                # and if it is, update par data and poo data
-                # and if the node was in the closed_lst, move it to open_lst
-                else:
-                    if poo[str(neighbor)] > poo[str(n)] + self.w(neighbor):
-                        poo[str(neighbor)] = poo[str(n)] + self.w(neighbor)
-                        par[str(neighbor)] = n
-
-                        if neighbor in self.closed_lst:
-                            self.closed_lst.remove(neighbor)
-                            self.open_lst.append(neighbor)
-
-            # remove n from the open_lst, and add it to closed_lst
-            # because all of his neighbors were inspected
-            self.open_lst.remove(n)
-            self.closed_lst.append(n)
-
-        print("Path does not exist!")
+        # path not found
         return None
 
     def getTotalTime(self):
@@ -203,7 +172,14 @@ class Level(object):
             tile = pygame.Surface((MAP_TILE_WIDTH, MAP_TILE_HEIGHT))
             tile.fill(color)
             tile.set_alpha(alpha)
+
+            if hasattr(tileList, "queue"):
+                tileList = tileList.queue
+
             for n in tileList:
+                # print("Type n:", type(n))
+                if type(n) is tuple:
+                    n = n[1]
                 plots.append(
                     (
                         tile,
@@ -220,7 +196,7 @@ class Level(object):
         plots = []
 
         plots += getTiles(self.open_lst, (255, 50, 255), 170)
-        plots += getTiles(self.closed_lst, (255, 125, 255), 170)
+        # plots += getTiles(self.closed_lst, (255, 125, 255), 170)
         plots += getTiles(self.reconst_path, (255, 90, 0), 170)
 
         font = pygame.font.SysFont("monospace", 24, True)
@@ -302,4 +278,4 @@ if __name__ == "__main__":
 
         overlays.draw(screen)
         pygame.display.flip()
-        clock.tick()
+        clock.tick(60)
