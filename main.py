@@ -71,15 +71,15 @@ class Level(object):
         for i in range(len(self.stages) - 1):
             start = self.stages[i]
             stop = self.stages[i + 1]
-            start_time = threading.Timer(0.005, self.goTo, [start, stop])
+            start_time = threading.Timer(0.05, self.goTo, [start, stop])
             start_time.start()
             start_time.join()
 
             if game_over:
                 break
 
-        self.open_lst = set([])
-        self.closed_lst = set([])
+        self.open_lst = []
+        self.closed_lst = []
 
     def getTimeTravel(self, path):
         totalTime = 0
@@ -107,8 +107,7 @@ class Level(object):
         return neighbors
 
     def h(self, p, q):
-        return 0
-        # math.dist(p, q)
+        return math.dist(p, q)
         # abs(p[0] - q[0]) + abs(p[1] - q[1])
 
     def w(self, p):
@@ -119,14 +118,16 @@ class Level(object):
 
     def a_star_algorithm(self, start, stop):
         print("Search A*: {} to {}".format(start, stop))
-        # In this open_lst is a lisy of nodes which have been visited, but who's
-        # neighbours haven't all been always inspected, It starts off with the start
-        # node
-        # And closed_lst is a list of nodes which have been visited
-        # and who's neighbors have been always inspected
+        # open_q - priority queue, stores candidate nodes for exploration
+        # open_list - list, same as q but non-destructive, used for drawing
+        # nodes_from - dict, keeps track of the ancestor of explored nodes
+        # costs - dict, stores the cost of reaching explored nodes
+        # NOTE: in this implementation, an explicit closed list is not used
+        # instead, we can reuse the costs dict for this purpose
+
         self.open_q = PriorityQueue()
         self.open_q.put((0, start))
-        self.open_lst = [start]
+        self.open_lst = [start]  # used for drawing purposes only
         nodes_from = {}
         costs = {}
         nodes_from[str(start)] = None
