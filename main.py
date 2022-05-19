@@ -8,9 +8,19 @@ import math
 
 
 class Level(object):
-    def load_file(self, filename="level.map"):
+    def __init__(self):
+        self.stages = []
         self.map = []
         self.key = {}
+        self.width = 0
+        self.height = 0
+
+        # a* state
+        self.open_lst = set([])
+        self.closed_lst = set([])
+        self.reconst_path = []
+
+    def load_file(self, filename="level.map"):
         parser = configparser.ConfigParser()
         parser.read(filename)
         map = open(parser.get("level", "map"), "r")
@@ -42,7 +52,6 @@ class Level(object):
         return image
 
     def setStageList(self):
-        self.stages = []
         for line in range(self.height):
             lineObjs = set(self.map[line])
             for letter in lineObjs:
@@ -53,10 +62,6 @@ class Level(object):
         self.stages.sort(key=lambda x: x[2])
 
     def initExploration(self):
-        self.open_lst = set([])
-        self.closed_lst = set([])
-        self.reconst_path = []
-
         start_time = threading.Timer(0, self.explore)
         start_time.start()
 
@@ -67,6 +72,9 @@ class Level(object):
             start_time = threading.Timer(0.5, self.goTo, [start, stop])
             start_time.start()
             start_time.join()
+
+            if game_over:
+                break
 
         self.open_lst = set([])
         self.closed_lst = set([])
@@ -125,7 +133,7 @@ class Level(object):
         par[str(start)] = start
 
         while len(self.open_lst) > 0:
-            time.sleep(0.0001)
+            # time.sleep(0.0001)
             n = None
 
             # it will find a node with the lowest value of f() -
@@ -258,11 +266,11 @@ class Level(object):
 if __name__ == "__main__":
     pygame.init()
 
-    SCREEN_WIDTH = 1600
-    SCREEN_HEIGHT = 900
+    SCREEN_WIDTH = 1200
+    SCREEN_HEIGHT = 800
 
-    MAP_TILE_WIDTH = 4
-    MAP_TILE_HEIGHT = 9
+    MAP_TILE_WIDTH = 2
+    MAP_TILE_HEIGHT = 5
 
     BORDER_X = 20
     BORDER_Y = 60
@@ -279,8 +287,8 @@ if __name__ == "__main__":
     background = level.render()
     overlays = pygame.sprite.RenderUpdates()
 
-    game_over = False
     exploring = False
+    game_over = False
 
     while not game_over:
         screen.blit(blackBackground, (0, 0))
