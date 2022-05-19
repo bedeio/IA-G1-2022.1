@@ -69,7 +69,7 @@ class Level(object):
         for i in range(len(self.stages) - 1):
             start = self.stages[i]
             stop = self.stages[i + 1]
-            start_time = threading.Timer(0.5, self.goTo, [start, stop])
+            start_time = threading.Timer(0.005, self.goTo, [start, stop])
             start_time.start()
             start_time.join()
 
@@ -105,7 +105,9 @@ class Level(object):
         return neighbors
 
     def h(self, p, q):
-        return math.dist(p, q)
+        return abs(p[0] - q[0]) + abs(p[1] - q[1])
+        # math.dist(p, q)
+        # abs(p[0] - q[0]) + abs(p[1] - q[1])
 
     def w(self, p):
         key = self.map[p[1]][p[0]]
@@ -134,18 +136,13 @@ class Level(object):
 
         while len(self.open_lst) > 0:
             # time.sleep(0.0001)
-            n = None
+            n = self.open_lst[0]
 
             # it will find a node with the lowest value of f() -
             for v in self.open_lst:
-                if n == None or poo[str(v)] + self.h(v, stop) < poo[str(n)] + self.h(
-                    n, stop
-                ):
+                # print("Poo:", poo[str(v)])
+                if poo[str(v)] + self.h(v, stop) < poo[str(n)] + self.h(n, stop):
                     n = v
-
-            if n == None:
-                print("Path does not exist!")
-                return None
 
             # if the current node is the stop
             # then we start again from start
@@ -160,7 +157,7 @@ class Level(object):
 
                 reconst_path.reverse()
 
-                print("Path found: {}".format(reconst_path))
+                # print("Path found: {}".format(reconst_path))
                 self.reconst_path += reconst_path
                 return reconst_path
 
@@ -266,8 +263,8 @@ class Level(object):
 if __name__ == "__main__":
     pygame.init()
 
-    SCREEN_WIDTH = 1200
-    SCREEN_HEIGHT = 800
+    SCREEN_WIDTH = 1366
+    SCREEN_HEIGHT = 960
 
     MAP_TILE_WIDTH = 2
     MAP_TILE_HEIGHT = 5
@@ -305,4 +302,4 @@ if __name__ == "__main__":
 
         overlays.draw(screen)
         pygame.display.flip()
-        clock.tick(30)
+        clock.tick()
