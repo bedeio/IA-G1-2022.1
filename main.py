@@ -109,6 +109,7 @@ class Level(object):
     def h(self, p, q):
         return math.dist(p, q)
         # abs(p[0] - q[0]) + abs(p[1] - q[1])
+        # math.dist(p, q)
 
     def w(self, p):
         key = self.map[p[1]][p[0]]
@@ -158,6 +159,7 @@ class Level(object):
                     nodes_from[str(neighbor)] = current_node
 
         # path not found
+        print("Path not found!")
         return None
 
     def getTotalTime(self):
