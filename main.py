@@ -6,6 +6,7 @@ import threading
 import time
 import math
 from queue import PriorityQueue
+from chars import Characters
 
 
 class Level(object):
@@ -240,6 +241,9 @@ class Level(object):
 
 
 if __name__ == "__main__":
+    c = Characters()
+    c.load_file("configs/chars.map")
+    
     pygame.init()
 
     SCREEN_WIDTH = 1600
@@ -266,6 +270,8 @@ if __name__ == "__main__":
     background = level.render()
     overlays = pygame.sprite.RenderUpdates()
 
+    chars = c.render()
+
     exploring = False
     game_over = False
 
@@ -284,6 +290,7 @@ if __name__ == "__main__":
 
         screen.blit(laterais, (0, 0))
 
+        screen.blit(chars, (1453, 57))
 
         overlays.draw(screen)
         pygame.display.flip()
