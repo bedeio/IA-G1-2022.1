@@ -259,7 +259,7 @@ if __name__ == "__main__":
     laterais = pygame.transform.scale(laterais, (SCREEN_WIDTH, SCREEN_HEIGHT))
 
     level = Level()
-    level.load_file("map/level.map")
+    level.load_file("configs/level.map")
 
     clock = pygame.time.Clock()
 

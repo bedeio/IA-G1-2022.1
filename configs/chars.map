@@ -1,0 +1,34 @@
+[Aang]
+speed = 1.8
+lifes = 8
+image = assets/chars/Aang.png
+
+[Katara]
+speed = 1.6
+lifes = 8
+image = assets/chars/Katara.png
+
+[Sokka]
+speed = 1.4
+lifes = 8
+image = assets/chars/Sokka.png
+
+[Toph]
+speed = 1.6
+lifes = 8
+image = assets/chars/Toph.png
+
+[Zukko]
+speed = 1.6
+lifes = 8
+image = assets/chars/Zukko.png
+
+[Momo]
+speed = 0.7
+lifes = 8
+image = assets/chars/Momo.png
+
+[Appa]
+speed = 0.9
+lifes = 8
+image = assets/chars/Appa.png

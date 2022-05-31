@@ -1,5 +1,5 @@
 [level]
-map = map/MAPA_LENDA-AANG.txt
+map = configs/MAPA_LENDA-AANG.txt
 
 [.]
 name = plano
