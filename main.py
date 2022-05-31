@@ -6,6 +6,7 @@ import threading
 import time
 import math
 from queue import PriorityQueue
+from chars import Characters
 
 
 class Level(object):
@@ -32,7 +33,7 @@ class Level(object):
                 desc = dict(parser.items(section))
                 self.key[section] = desc
         self.width = len(self.map[0])
-        self.height = len(self.map)
+        self.height = len(self.map)-1
         self.setStageList()
 
     def render(self):
@@ -48,7 +49,7 @@ class Level(object):
                 else:
                     color = self.key["_"]["color"]
                 red, green, blue = [int(v) for v in color.split(",")]
-                rect = pygame.Surface((MAP_TILE_WIDTH - 1, MAP_TILE_HEIGHT - 1))
+                rect = pygame.Surface((MAP_TILE_WIDTH, MAP_TILE_HEIGHT))
                 rect.fill((red, green, blue))
                 image.blit(rect, (map_x * MAP_TILE_WIDTH, map_y * MAP_TILE_HEIGHT))
         return image
@@ -100,7 +101,7 @@ class Level(object):
             neighbors.append([v[0] - 1, v[1]])
         if v[1] - 1 >= 0:
             neighbors.append([v[0], v[1] - 1])
-        if v[1] + 1 < self.height - 1:
+        if v[1] + 1 < self.height:
             neighbors.append([v[0], v[1] + 1])
         if v[0] + 1 < self.width - 1:
             neighbors.append([v[0] + 1, v[1]])
@@ -240,28 +241,36 @@ class Level(object):
 
 
 if __name__ == "__main__":
+    c = Characters()
+    c.load_file("configs/chars.map")
+    
     pygame.init()
 
-    SCREEN_WIDTH = 1366
-    SCREEN_HEIGHT = 960
+    SCREEN_WIDTH = 1600
+    SCREEN_HEIGHT = 900
 
-    MAP_TILE_WIDTH = 2
-    MAP_TILE_HEIGHT = 5
+    MAP_TILE_WIDTH = 3
+    MAP_TILE_HEIGHT = 7
 
-    BORDER_X = 20
-    BORDER_Y = 60
+    BORDER_X = 40
+    BORDER_Y = 200
 
     screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
     blackBackground = pygame.Surface((SCREEN_WIDTH, SCREEN_HEIGHT))
-    blackBackground.fill((0, 0, 0))
+    blackBackground.fill((232, 208, 176))
+
+    laterais = pygame.image.load('assets/laterais.png')
+    laterais = pygame.transform.scale(laterais, (SCREEN_WIDTH, SCREEN_HEIGHT))
 
     level = Level()
-    level.load_file("map/level.map")
+    level.load_file("configs/level.map")
 
     clock = pygame.time.Clock()
 
     background = level.render()
     overlays = pygame.sprite.RenderUpdates()
+
+    chars = c.render()
 
     exploring = False
     game_over = False
@@ -278,6 +287,10 @@ if __name__ == "__main__":
 
         if exploring:
             screen.blits(level.renderExploration())
+
+        screen.blit(laterais, (0, 0))
+
+        screen.blit(chars, (1453, 57))
 
         overlays.draw(screen)
         pygame.display.flip()
