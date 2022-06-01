@@ -17,6 +17,9 @@ class Level(object):
         self.width = 0
         self.height = 0
 
+        self.currStage = 0
+        self.running = False
+
         # a* state
         self.open_q = PriorityQueue()
         self.open_lst = []
@@ -64,23 +67,32 @@ class Level(object):
 
         self.stages.sort(key=lambda x: x[2])
 
-    def initExploration(self):
-        start_time = threading.Timer(0, self.explore)
+    def nextExploration(self, chars):
+        if self.running:
+            return
+        self.running = True
+
+        if self.currStage == 0:
+            self.open_lst = []
+            self.closed_lst = []
+        
+        start_time = threading.Timer(0, self.explore, [chars])
         start_time.start()
-
-    def explore(self):
-        for i in range(len(self.stages) - 1):
-            start = self.stages[i]
-            stop = self.stages[i + 1]
-            start_time = threading.Timer(0.05, self.goTo, [start, stop])
-            start_time.start()
-            start_time.join()
-
-            if game_over:
-                break
-
+    
+    def endExploration(self):
         self.open_lst = []
         self.closed_lst = []
+
+    def explore(self, chars):
+        start = self.stages[self.currStage]
+        stop = self.stages[self.currStage + 1]
+        start_time = threading.Timer(0.05, self.goTo, [start, stop])
+        start_time.start()
+        start_time.join()
+
+        chars.solucionarEtapa(self.currStage)
+        self.currStage += 1
+        self.running = False
 
     def getTimeTravel(self, path):
         totalTime = 0
@@ -136,6 +148,7 @@ class Level(object):
         costs[str(start)] = 0
 
         while not self.open_q.empty():
+            # time.sleep(0.0001)
             current_node = self.open_q.get()[1]
             if current_node == stop:
                 reconst_path = []
@@ -280,13 +293,14 @@ if __name__ == "__main__":
         screen.blit(background, (BORDER_X, BORDER_Y))
         for event in pygame.event.get():
             if event.type == KEYDOWN and event.key == K_SPACE:
-                level.initExploration()
+                level.nextExploration(c)
                 exploring = True
             if event.type == QUIT or event.type == KEYDOWN and event.key == K_ESCAPE:
                 game_over = True
 
         if exploring:
             screen.blits(level.renderExploration())
+            chars = c.render()
 
         screen.blit(laterais, (0, 0))
 

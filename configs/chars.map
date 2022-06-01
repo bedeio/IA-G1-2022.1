@@ -32,3 +32,6 @@ image = assets/chars/Momo.png
 speed = 0.9
 lifes = 8
 image = assets/chars/Appa.png
+
+[Etapas]
+solution = configs/solution.txt
