@@ -48,8 +48,7 @@ def valida_sol(sol, debug=False):
     total_vidas = 0
     for i in range(PERSONAGENS):
         vidas = v[:, i].sum()
-        p_ind = [*personagens][i]
-        personagem = personagens[p_ind][0]
+        personagem = personagens[i][0]
         total_vidas += vidas
 
         if vidas > VIDAS or vidas < 0:
@@ -71,8 +70,7 @@ class SimAnnealing:
             agilidade_etapa = 0
             for i in range(PERSONAGENS):
                 if row[i] == 1:
-                    p_ind = [*personagens][i]
-                    agilidade_etapa += personagens[p_ind][1]
+                    agilidade_etapa += personagens[i][1]
 
             if agilidade_etapa == 0:
                 agilidade_etapa = 1e-12
@@ -173,14 +171,11 @@ class SimAnnealing:
         curr_state = start_state
         curr_cost = self.total_cost(curr_state)
         curr_temp = start_temp
-        best = curr_state
 
         for iter in range(maxiter):
 
             curr_temp = self.temperature(start_temp, curr_temp, alpha, iter)
             neighbor_state, neighbor_cost = self.rand_neighbor(curr_state)
-            if curr_cost > neighbor_cost:
-                best = neighbor_state
 
             if (
                 self.acceptance_prob(curr_cost, neighbor_cost, curr_temp)
@@ -190,7 +185,7 @@ class SimAnnealing:
                 curr_cost = neighbor_cost
 
         # print("Ended at temp:", curr_temp)
-        return best, self.total_cost(best)
+        return curr_state, self.total_cost(curr_state)
 
 
 def initial_solution():
@@ -244,7 +239,7 @@ def init():
 
     if valida_sol(best_sol, debug=True):
         print("Tempo total apos annealing:", best_cost)
-        print_sol(new_sol)
+        print_sol(best_sol)
     else:
         print("Solucao encontrada é inválida!")
 
