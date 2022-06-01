@@ -91,9 +91,9 @@ class Characters(object):
         surface = pygame.Surface((rSize[0] + borderX * 8, rSize[1] + r2Size[1] * (self.size - 1)), pygame.SRCALPHA, 32)
         for idx, i in enumerate(self.chars.keys()):
             char = self.chars[i].render(idx == 0)
-            if i == 0:
+            if idx == 0:
                 surface.blit(char, (0, 0))
-            elif i == 1:
+            elif idx == 1:
                 surface.blit(char, (0, char.get_size()[1] - 1))
             else:
                 surface.blit(char, (0, char.get_size()[1] * idx - 4 * idx + 3))
