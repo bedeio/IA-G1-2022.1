@@ -290,7 +290,7 @@ if __name__ == "__main__":
 
         screen.blit(laterais, (0, 0))
 
-        screen.blit(chars, (1453, 57))
+        screen.blit(chars, (1120.5, 57))
 
         overlays.draw(screen)
         pygame.display.flip()
