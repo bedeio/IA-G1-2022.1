@@ -23,7 +23,6 @@ class Level(object):
         # a* state
         self.open_q = PriorityQueue()
         self.open_lst = []
-        self.closed_lst = []
         self.reconst_path = []
 
     def load_file(self, filename="level.map"):
@@ -74,14 +73,12 @@ class Level(object):
 
         if self.currStage == 0 or self.currStage == len(self.stages)-1:
             self.open_lst = []
-            self.closed_lst = []
         
         start_time = threading.Timer(0, self.explore, [chars])
         start_time.start()
     
     def endExploration(self):
         self.open_lst = []
-        self.closed_lst = []
 
     def explore(self, chars):
         if self.currStage == len(self.stages)-1:
@@ -199,7 +196,7 @@ class Level(object):
                 # print("Type n:", type(n))
                 if type(n) is tuple:
                     n = n[1]
-                plots.append(
+                tiles.append(
                     (
                         tile,
                         tile.get_rect(
@@ -215,21 +212,31 @@ class Level(object):
         plots = []
 
         plots += getTiles(self.open_lst, (255, 50, 255), 170)
-        # plots += getTiles(self.closed_lst, (255, 125, 255), 170)
         plots += getTiles(self.reconst_path, (255, 90, 0), 170)
 
-
-        plots.append((FONT.render("Total: {}".format(self.getTotalTime()), False, (255, 255, 255)),
-                (self.width * MAP_TILE_WIDTH + BORDER_X + 60, 50)))
+        return plots
+    
+    def renderInfo(self, chars):
+        plots = []
+        area = pygame.Surface((self.width * MAP_TILE_WIDTH, self.height * MAP_TILE_HEIGHT))
+        area.set_alpha(180)
+        plots.append(( area, area.get_rect(topleft = (BORDER_X, BORDER_Y)) ))
+        plots.append((FONT.render("Tempo de Deslocamento e de Realizacao", False, (255, 255, 255)),
+                (BORDER_X + 20, BORDER_Y + 20)))
+        realizacao = 0
         for i, s in enumerate(self.stages):
             if len(s) > 3:
-                plots.append((FONT.render("Etapa {}: {}".format(i, s[-1]), False, (255, 255, 255)),
-                        (self.width * MAP_TILE_WIDTH + BORDER_X + 60, 23 * (i + 1) + 50)))
+                text = FONT.render("Etapa {}: {}, {:.3f}".format(i, s[-1], chars.tempoEtapa(i)), False, (255, 255, 255))
+                realizacao += chars.tempoEtapa(i)
             else:
-                plots.append((FONT.render("Etapa {}".format(i), False, (255, 255, 255)),
-                        (self.width * MAP_TILE_WIDTH + BORDER_X + 60, 23 * (i + 1) + 50)))
-
+                text = FONT.render("Etapa {}".format(i), False, (255, 255, 255))
+            plots.append((text,
+                    (BORDER_X + 20 if i < len(self.stages) / 2 else BORDER_X * 5, 
+                        BORDER_Y + 100 + 28 * (i % (len(self.stages) / 2)))))
+        plots.append((FONT.render("Total: {}, {}".format(self.getTotalTime(), realizacao), False, (255, 255, 255)),
+                (BORDER_X + 20, BORDER_Y + 60)))
         return plots
+
 
 
 if __name__ == "__main__":    
@@ -244,7 +251,7 @@ if __name__ == "__main__":
     BORDER_X = 110
     BORDER_Y = 223
 
-    FONT = pygame.font.Font("assets/font.ttf", 21)
+    FONT = pygame.font.Font("assets/font.ttf", 17)
 
     screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
     blackBackground = pygame.Surface((SCREEN_WIDTH, SCREEN_HEIGHT))
@@ -287,6 +294,7 @@ if __name__ == "__main__":
         if exploring:
             screen.blits(level.renderExploration())
             chars = c.render()
+            screen.blits(level.renderInfo(c))
 
         screen.blit(title, (330, 30))
 

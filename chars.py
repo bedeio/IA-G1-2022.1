@@ -80,6 +80,18 @@ class Characters(object):
             if self.etapas[etapa][i] == 1:
                 char = self.solPosition[i]
                 self.chars[char].useChar()
+                
+    def tempoEtapa(self, etapa):
+        agilidade = 0
+        dificuldade = 10 * etapa
+        etapa = etapa -1
+        for i in range(len(self.etapas[etapa])):
+            if self.etapas[etapa][i] == 1:
+                char = self.solPosition[i]
+                agilidade += self.chars[char].speed
+        if agilidade == 0:
+            return 0
+        return dificuldade / agilidade
 
 
     def render(self):
