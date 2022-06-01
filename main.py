@@ -72,7 +72,7 @@ class Level(object):
             return
         self.running = True
 
-        if self.currStage == 0:
+        if self.currStage == 0 or self.currStage == len(self.stages)-1:
             self.open_lst = []
             self.closed_lst = []
         
@@ -84,6 +84,8 @@ class Level(object):
         self.closed_lst = []
 
     def explore(self, chars):
+        if self.currStage == len(self.stages)-1:
+            return
         start = self.stages[self.currStage]
         stop = self.stages[self.currStage + 1]
         start_time = threading.Timer(0.05, self.goTo, [start, stop])
@@ -218,37 +220,15 @@ class Level(object):
 
         font = pygame.font.SysFont("monospace", 24, True)
 
-        plots.append(
-            (
-                font.render(
-                    "Total: {}".format(self.getTotalTime()), False, (255, 255, 255)
-                ),
-                (self.width * MAP_TILE_WIDTH + BORDER_X + 20, 50),
-            )
-        )
+        plots.append((font.render("Total: {}".format(self.getTotalTime()), False, (255, 255, 255)),
+                (self.width * MAP_TILE_WIDTH + BORDER_X + 60, 50)))
         for i, s in enumerate(self.stages):
             if len(s) > 3:
-                plots.append(
-                    (
-                        font.render(
-                            "Etapa {}: {}".format(i, s[-1]), False, (255, 255, 255)
-                        ),
-                        (
-                            self.width * MAP_TILE_WIDTH + BORDER_X + 20,
-                            23 * (i + 1) + 50,
-                        ),
-                    )
-                )
+                plots.append((font.render("Etapa {}: {}".format(i, s[-1]), False, (255, 255, 255)),
+                        (self.width * MAP_TILE_WIDTH + BORDER_X + 60, 23 * (i + 1) + 50)))
             else:
-                plots.append(
-                    (
-                        font.render("Etapa {}".format(i), False, (255, 255, 255)),
-                        (
-                            self.width * MAP_TILE_WIDTH + BORDER_X + 20,
-                            23 * (i + 1) + 50,
-                        ),
-                    )
-                )
+                plots.append((font.render("Etapa {}".format(i), False, (255, 255, 255)),
+                        (self.width * MAP_TILE_WIDTH + BORDER_X + 60, 23 * (i + 1) + 50)))
 
         return plots
 
@@ -265,8 +245,8 @@ if __name__ == "__main__":
     MAP_TILE_WIDTH = 3
     MAP_TILE_HEIGHT = 7
 
-    BORDER_X = 40
-    BORDER_Y = 200
+    BORDER_X = 110
+    BORDER_Y = 225
 
     screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
     blackBackground = pygame.Surface((SCREEN_WIDTH, SCREEN_HEIGHT))
@@ -274,6 +254,12 @@ if __name__ == "__main__":
 
     laterais = pygame.image.load('assets/laterais.png')
     laterais = pygame.transform.scale(laterais, (SCREEN_WIDTH, SCREEN_HEIGHT))
+
+    moldura = pygame.image.load('assets/moldura.png')
+    moldura = pygame.transform.scale(moldura, (moldura.get_size()[0] * 3.65, moldura.get_size()[1] * 3.6))
+    
+    title = pygame.image.load('assets/titulo.png')
+    title = pygame.transform.scale(title, (title.get_size()[0] * 3.2, title.get_size()[1] * 3.2))
 
     level = Level()
     level.load_file("configs/level.map")
@@ -301,6 +287,10 @@ if __name__ == "__main__":
         if exploring:
             screen.blits(level.renderExploration())
             chars = c.render()
+
+        screen.blit(title, (330, 30))
+
+        screen.blit(moldura, (68, 195))
 
         screen.blit(laterais, (0, 0))
 
