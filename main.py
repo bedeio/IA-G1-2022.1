@@ -219,6 +219,7 @@ class Level(object):
     def renderInfo(self, chars):
         plots = []
         area = pygame.Surface((self.width * MAP_TILE_WIDTH, self.height * MAP_TILE_HEIGHT))
+        area.fill((0,0,0))
         area.set_alpha(180)
         plots.append(( area, area.get_rect(topleft = (BORDER_X, BORDER_Y)) ))
         plots.append((FONT.render("Tempo de Deslocamento e de Realizacao", False, (255, 255, 255)),
