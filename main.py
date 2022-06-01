@@ -280,6 +280,7 @@ if __name__ == "__main__":
 
     exploring = False
     game_over = False
+    info = False
 
     while not game_over:
         screen.blit(blackBackground, (0, 0))
@@ -290,10 +291,14 @@ if __name__ == "__main__":
                 exploring = True
             if event.type == QUIT or event.type == KEYDOWN and event.key == K_ESCAPE:
                 game_over = True
+            if event.type == KEYDOWN and event.key == K_i:
+                info = not info
 
         if exploring:
             screen.blits(level.renderExploration())
             chars = c.render()
+            
+        if info:
             screen.blits(level.renderInfo(c))
 
         screen.blit(title, (330, 30))
