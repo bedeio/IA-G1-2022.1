@@ -229,7 +229,7 @@ def init():
 
     best_sol = []
     best_cost = np.inf
-    for i in range(10):
+    for i in range(20):
         new_sol, new_cost = solver.solve(
             start_state=sol, start_temp=18.0, alpha=8, maxiter=10000
         )

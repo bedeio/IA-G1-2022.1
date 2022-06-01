@@ -1,6 +1,23 @@
-# IA-G1-2022.1
+# IA-G1-2022.1 - Thomas Botelho, Emanuel Umbellino, Bernardo Bachman, Luiz Arthur
 
-Trabalho de IA
+Trabalho de IA 1
+
+O projeto consiste de duas partes,
+
+- Uma interface que carrega um mapa de um arquivo externo, mostra um caminho calculado com A\* em tempo real e mostra os personagens escolhidos para cada etapa a partir de um arquivo com resultados pré-calculado.
+- Um solver que usa o processo de Simulated Annealing para solucionar o problema da escolha de personagens para cada etapa.
+
+---
+
+A interface depende da biblioteca Pygame para desenhar o mapa na tela. Para executá-la use o comando
+
+```
+python main.py
+```
+
+A partir disto use a barra de espaço para avançar a etapa e a tecla 'i' para mostrar os tempos de deslocamento de realização de cada caminho.
+
+---
 
 Para executar o procedimento de simulated annealing use o comando
 
@@ -20,32 +37,32 @@ Tempo total apos annealing: 1822.1074358062847
  [0 0 0 0 0 1 0]
  [0 0 0 0 1 0 0]
  [0 0 0 0 1 0 0]
- [0 1 0 0 0 0 0]
- [0 0 1 0 0 0 0]
+ [0 0 0 1 0 0 0]
+ [0 0 0 1 0 0 0]
  [1 0 0 0 0 0 0]
  [1 0 0 0 0 0 0]
  [0 0 0 0 1 0 1]
- [0 0 1 0 0 0 1]
- [0 1 0 0 0 0 1]
+ [0 0 0 0 1 0 1]
  [0 0 0 1 0 0 1]
- [0 1 0 0 0 1 0]
+ [0 1 0 0 0 0 1]
+ [0 0 1 0 0 1 0]
  [0 0 1 0 0 1 0]
  [0 1 0 0 0 1 0]
  [1 0 0 0 0 1 0]
  [1 0 0 0 0 1 0]
- [0 0 1 0 1 0 0]
+ [1 0 0 0 0 1 0]
  [0 1 0 0 1 0 0]
- [0 0 0 1 1 0 0]
- [0 0 0 1 1 0 0]
- [0 1 0 0 0 1 1]
+ [0 0 1 0 1 0 0]
+ [0 1 1 0 0 0 0]
  [0 1 0 1 0 0 0]
- [0 0 1 1 0 0 0]
- [0 0 1 1 0 0 0]
- [1 1 0 0 0 0 0]
+ [0 1 1 0 0 0 0]
+ [0 1 1 0 0 0 0]
+ [0 1 1 0 0 0 0]
  [1 0 0 1 0 0 0]
  [1 0 0 1 0 0 0]
  [1 0 1 0 0 0 0]
- [0 0 1 0 1 0 1]]
+ [0 0 0 1 1 0 1]
+ [0 0 0 1 1 0 1]]
 ```
 
 Note que cada posição no vetor corresponde a um personagem.
