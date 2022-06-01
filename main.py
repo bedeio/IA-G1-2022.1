@@ -218,25 +218,21 @@ class Level(object):
         # plots += getTiles(self.closed_lst, (255, 125, 255), 170)
         plots += getTiles(self.reconst_path, (255, 90, 0), 170)
 
-        font = pygame.font.SysFont("monospace", 24, True)
 
-        plots.append((font.render("Total: {}".format(self.getTotalTime()), False, (255, 255, 255)),
+        plots.append((FONT.render("Total: {}".format(self.getTotalTime()), False, (255, 255, 255)),
                 (self.width * MAP_TILE_WIDTH + BORDER_X + 60, 50)))
         for i, s in enumerate(self.stages):
             if len(s) > 3:
-                plots.append((font.render("Etapa {}: {}".format(i, s[-1]), False, (255, 255, 255)),
+                plots.append((FONT.render("Etapa {}: {}".format(i, s[-1]), False, (255, 255, 255)),
                         (self.width * MAP_TILE_WIDTH + BORDER_X + 60, 23 * (i + 1) + 50)))
             else:
-                plots.append((font.render("Etapa {}".format(i), False, (255, 255, 255)),
+                plots.append((FONT.render("Etapa {}".format(i), False, (255, 255, 255)),
                         (self.width * MAP_TILE_WIDTH + BORDER_X + 60, 23 * (i + 1) + 50)))
 
         return plots
 
 
-if __name__ == "__main__":
-    c = Characters()
-    c.load_file("configs/chars.map")
-    
+if __name__ == "__main__":    
     pygame.init()
 
     SCREEN_WIDTH = 1600
@@ -246,7 +242,9 @@ if __name__ == "__main__":
     MAP_TILE_HEIGHT = 7
 
     BORDER_X = 110
-    BORDER_Y = 225
+    BORDER_Y = 223
+
+    FONT = pygame.font.Font("assets/font.ttf", 21)
 
     screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
     blackBackground = pygame.Surface((SCREEN_WIDTH, SCREEN_HEIGHT))
@@ -269,6 +267,8 @@ if __name__ == "__main__":
     background = level.render()
     overlays = pygame.sprite.RenderUpdates()
 
+    c = Characters()
+    c.load_file("configs/chars.map")
     chars = c.render()
 
     exploring = False
@@ -290,7 +290,7 @@ if __name__ == "__main__":
 
         screen.blit(title, (330, 30))
 
-        screen.blit(moldura, (68, 195))
+        screen.blit(moldura, (68, 193))
 
         screen.blit(laterais, (0, 0))
 
