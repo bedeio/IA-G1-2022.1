@@ -254,9 +254,10 @@ if __name__ == "__main__":
 
     FONT = pygame.font.Font("assets/font.ttf", 17)
 
-    screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
-    blackBackground = pygame.Surface((SCREEN_WIDTH, SCREEN_HEIGHT))
-    blackBackground.fill((232, 208, 176))
+    screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT), pygame.RESIZABLE)
+    scene = pygame.Surface((SCREEN_WIDTH, SCREEN_HEIGHT))
+
+    empty = Color((232, 208, 176))
 
     laterais = pygame.image.load('assets/laterais.png')
     laterais = pygame.transform.scale(laterais, (SCREEN_WIDTH, SCREEN_HEIGHT))
@@ -272,7 +273,7 @@ if __name__ == "__main__":
 
     clock = pygame.time.Clock()
 
-    background = level.render()
+    map = level.render()
     overlays = pygame.sprite.RenderUpdates()
 
     c = Characters()
@@ -284,8 +285,10 @@ if __name__ == "__main__":
     info = False
 
     while not game_over:
-        screen.blit(blackBackground, (0, 0))
-        screen.blit(background, (BORDER_X, BORDER_Y))
+        scene = pygame.transform.scale(scene, (SCREEN_WIDTH, SCREEN_HEIGHT))
+        scene.fill(empty)
+
+        scene.blit(map, (BORDER_X, BORDER_Y))
         for event in pygame.event.get():
             if event.type == KEYDOWN and event.key == K_SPACE:
                 level.nextExploration(c)
@@ -296,20 +299,23 @@ if __name__ == "__main__":
                 info = not info
 
         if exploring:
-            screen.blits(level.renderExploration())
+            scene.blits(level.renderExploration())
             chars = c.render()
             
         if info:
-            screen.blits(level.renderInfo(c))
+            scene.blits(level.renderInfo(c))
 
-        screen.blit(title, (330, 30))
+        scene.blit(title, (330, 30))
 
-        screen.blit(moldura, (68, 193))
+        scene.blit(moldura, (68, 193))
 
-        screen.blit(laterais, (0, 0))
+        scene.blit(laterais, (0, 0))
 
-        screen.blit(chars, (1120.5, 57))
+        scene.blit(chars, (1120.5, 57))
 
+        scene = pygame.transform.scale(scene, (screen.get_size()[0], screen.get_size()[1]))
+        screen.blit(scene, (0,0))
         overlays.draw(screen)
+
         pygame.display.flip()
-        clock.tick(60)
+        clock.tick(24)
