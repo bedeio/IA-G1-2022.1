@@ -313,8 +313,15 @@ if __name__ == "__main__":
 
         scene.blit(chars, (1120.5, 57))
 
-        scene = pygame.transform.scale(scene, (screen.get_size()[0], screen.get_size()[1]))
-        screen.blit(scene, (0,0))
+        size = screen.get_size()
+        widthRate = (size[0]) / SCREEN_WIDTH
+        heightRate = (size[1]) / SCREEN_HEIGHT
+        if widthRate < heightRate:
+            scene = pygame.transform.scale(scene, (SCREEN_WIDTH * widthRate, SCREEN_HEIGHT * widthRate))
+        else:
+            scene = pygame.transform.scale(scene, (SCREEN_WIDTH * heightRate, SCREEN_HEIGHT * heightRate))
+            
+        screen.blit(scene, ((size[0] / 2) - (scene.get_width() / 2), (size[1] / 2) - (scene.get_height() / 2)))
         overlays.draw(screen)
 
         pygame.display.flip()
