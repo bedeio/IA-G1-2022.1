@@ -1,4 +1,4 @@
-# IA-G1-2022.1 - Thomas Botelho, Emanuel Umbellino, Bernardo Bachman, Luiz Arthur
+# IA-G1-2022.1 - Thomas Botelho, Emanuel Umbellino
 
 Trabalho de IA 1
 
